@@ -29,9 +29,10 @@ def post_issue():
   return {'error': 'No Title'}, 400
 
 @app.route("/issues/<int:issue_id>")
-def check_issue(issue_id):
-  if issue_id < next_issue_id:
-    return issue_store[issue_id]
+def get_issue(issue_id):
+  for issue in issue_store:
+    if issue['id'] == issue_id:
+      return issue
   return {'error': 'Not Found'}, 404
 
 if __name__ == "__main__":
