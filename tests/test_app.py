@@ -2,17 +2,20 @@ from app import app
 
 client = app.test_client()
 
-def test_code():
-  response = client.get("/health")  
+def test_health():
+  response = client.get("/health")
   assert response.status_code == 200
-
-def test_status():
-  response = client.get("/health")  
   assert response.json["status"] == "ok"
 
 def test_issues():
   response = client.get("/issues")
-  print(response.json)
-  print(response.text)
-  print(response.data)
+  assert response.status_code == 200
   assert response.json == []
+
+def test_post_issue():
+  payload = {'title': 'Fix login bug'}
+  response = client.post("/issues", json = payload)
+  assert response.status_code == 201
+  assert response.json['title'] == 'Fix login bug' and response.json['status'] == 'open'
+  response_get = client.get('/issues')
+  assert response_get.json[0]['title'] == 'Fix login bug'
