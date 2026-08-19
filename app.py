@@ -3,7 +3,7 @@ from flask import Flask, request
 app = Flask(__name__)
 
 issue_store = []
-id = 0
+next_issue_id = 0
 
 @app.route("/health")
 def health():
@@ -13,18 +13,20 @@ def health():
 def issues():
   return issue_store
 
-@app.route("/issues", methods = ["POST"])
+@app.route("/issues", methods=["POST"])
 def post_issue():
-  global id
+  global next_issue_id
   data = request.get_json()
-  issue = {
-    'id': id,
-    'title': data.get('title'),
-    'status': data.get('status', 'open')
-  }
-  issue_store.append(issue)
-  id += 1
-  return issue, 201
+  if data.get('title'):
+    issue = {
+      'id': next_issue_id,
+      'title': data.get('title'),
+      'status': data.get('status', 'open')
+    }
+    issue_store.append(issue)
+    next_issue_id += 1
+    return issue, 201
+  return {'error': 'No Title'}, 400
 
 if __name__ == "__main__":
   app.run()
