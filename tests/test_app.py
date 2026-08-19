@@ -35,3 +35,14 @@ def test_post_issue_without_title(reset_state):
   assert app_module.next_issue_id == 0
   assert app_module.issue_store == []
   
+def test_check_issue(reset_state):
+  payload = {'title': 'Fix login bug'}
+  client.post('/issues', json = payload)
+  response = client.get('/issues/0')
+  assert response.status_code == 200
+  assert response.json['title'] == 'Fix login bug'
+  
+def test_check_non_existent_issue(reset_state):
+  response = client.get('/issues/50')
+  assert response.status_code == 404
+  assert response.json['error'] == 'Not Found'
