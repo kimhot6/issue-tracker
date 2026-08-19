@@ -6,5 +6,9 @@ app = Flask(__name__)
 def health():
   return {"status":"ok"}
 
+@app.route("/issues")
+def issues():
+  return []
+
 if __name__ == "__main__":
   app.run()
