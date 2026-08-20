@@ -17,7 +17,15 @@ CREATE TABLE IF NOT EXISTS issues(
 @app.route("/issues")
 def issues():
   rows = cursor.execute("SELECT * FROM issues").fetchall()
-  return rows
+  issues = []
+  for row in rows:
+    issue = {
+      'id': row[0],
+      'title': row[1],
+      'status': row[2]
+    }
+    issues.append(issue)
+  return issues
 
 @app.route("/issues", methods=["POST"])
 def post_issue():
@@ -37,9 +45,13 @@ def post_issue():
 
 @app.route("/issues/<int:issue_id>")
 def get_issue(issue_id):
-  issue = cursor.execute("SELECT * FROM issues WHERE id = ?", issue_id)
-  if issue:
-    return issue
+  row = cursor.execute("SELECT * FROM issues WHERE id = ?", (issue_id,)).fetchone()
+  if row:
+    return {
+      'id': row[0],
+      'title': row[1],
+      'status': row[2]
+    }
   return {'error': 'Not Found'}, 404
 
 # @app.route('/issues/<int:issue_id>', methods=['DELETE'])

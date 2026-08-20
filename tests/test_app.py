@@ -10,10 +10,10 @@ def reset_state():
   cursor.execute("DELETE FROM issues")
   conn.commit()
   
-# def test_issues(reset_state):
-#   response = client.get("/issues")
-#   assert response.status_code == 200
-#   assert response.json == []
+def test_issues(reset_state):
+  response = client.get("/issues")
+  assert response.status_code == 200
+  assert response.json == []
 
 def test_post_issue(reset_state):
   payload = {'title': 'Fix login bug'}
@@ -21,30 +21,28 @@ def test_post_issue(reset_state):
   assert response.status_code == 201
   assert response.json['title'] == 'Fix login bug'
   assert response.json['status'] == 'open'
-  response_get = client.get('/issues')
-  assert response_get.json[0][1] == 'Fix login bug'
+  response = client.get('/issues')
+  assert response.json[0]['title'] == 'Fix login bug'
 
 def test_post_issue_without_title(reset_state):
   payload = {}
   response = client.post('/issues', json=payload)
   assert response.status_code == 400
   assert response.json['error'] == 'No Title'
-  cursor.execute("SELECT COUNT(*) FROM issues")
-  row_count = cursor.fetchone()[0]
+  row_count = cursor.execute("SELECT COUNT(*) FROM issues").fetchone()[0]
   assert row_count == 0
   
-# def test_get_issue(reset_state):
-#   payload = {'title': 'Fix login bug'}
-#   response_post = client.post('/issues', json = payload)
-#   assert response_post.status_code == 201
-#   response = client.get('/issues/0')
-#   assert response.status_code == 200
-#   assert response.json['title'] == 'Fix login bug'
-  
-# def test_get_non_existent_issue(reset_state):
-#   response = client.get('/issues/50')
-#   assert response.status_code == 404
-#   assert response.json['error'] == 'Not Found'
+def test_get_issue(reset_state):
+  payload = {'title': 'Fix login bug'}
+  response = client.post('/issues', json = payload)
+  assert response.status_code == 201
+  issue_id = response.json['id']
+  response = client.get(f'/issues/{issue_id}')
+  assert response.status_code == 200
+  assert response.json['title'] == 'Fix login bug'
+  response = client.get(f'/issues/{issue_id+999}')
+  assert response.status_code == 404
+  assert response.json['error'] == 'Not Found'
 
 # def test_delete_issue(reset_state):
 #   payload = {'title': 'Fix login bug'}
