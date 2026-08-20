@@ -47,8 +47,9 @@ def get_issue(issue_id):
 
 @app.route('/issues/<int:issue_id>', methods=['DELETE'])
 def delete_issue(issue_id):
-  if cursor.execute("SELECT * FROM issues WHERE id = ?", (issue_id,)):
+  if cursor.execute("SELECT * FROM issues WHERE id = ?", (issue_id,)).fetchone():
     cursor.execute("DELETE FROM issues WHERE id = ?", (issue_id,))
+    conn.commit()
     return '', 204
   return {'error': 'Not Found'}, 404
 
