@@ -47,3 +47,14 @@ def test_get_non_existent_issue(reset_state):
   response = client.get('/issues/50')
   assert response.status_code == 404
   assert response.json['error'] == 'Not Found'
+
+def test_delete_issue(reset_state):
+  payload = {'title': 'Fix login bug'}
+  response = client.post('/issues', json = payload)
+  assert response.status_code == 201
+  assert response.json['title'] == 'Fix login bug'
+  response = client.delete('/issues/0')
+  assert response.status_code == 204
+  response = client.get('/issues/0')
+  assert response.status_code == 404
+  assert response.json['error'] == 'Not Found'
