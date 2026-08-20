@@ -15,8 +15,7 @@ payload = ('Fix login bug',)
 cursor.execute("INSERT INTO issues (title) VALUES (?)", payload)
 conn.commit()
 
-issue_id = 1
-cursor.execute("SELECT * FROM issues WHERE id = ?", (issue_id,))
+cursor.execute("SELECT * FROM issues WHERE id = ?", (cursor.lastrowid,))
 row = cursor.fetchone()
 print(row)
 

@@ -2,3 +2,4 @@
 __pycache__/
 .pytest_cache/
 issues.db
+sqlite_practice.py
