@@ -43,5 +43,17 @@ def delete_issue(issue_id):
       return '', 204
   return {'error': 'Not Found'}, 404
 
+@app.route('/issues/<int:issue_id>', methods=['PATCH'])
+def patch_issue(issue_id):
+  for issue in issue_store:
+    if issue['id'] == issue_id:
+      data = request.get_json()
+      if 'title' in data:
+        issue['title'] = data['title']
+      if 'status' in data:
+        issue['status'] = data['status']
+      return issue
+  return {'error': 'Not Found'}, 404
+
 if __name__ == "__main__":
   app.run()

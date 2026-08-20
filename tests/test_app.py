@@ -58,3 +58,15 @@ def test_delete_issue(reset_state):
   response = client.get('/issues/0')
   assert response.status_code == 404
   assert response.json['error'] == 'Not Found'
+  assert app_module.issue_store == []
+  
+def test_patch_issue(reset_state):
+  payload = {'title': 'Fix login bug'}
+  response = client.post('/issues', json=payload)
+  assert response.status_code == 201
+  assert response.json['title'] == 'Fix login bug'
+  assert response.json['status'] == 'open'
+  payload = {'status': 'closed'}
+  response = client.patch('/issues/0', json=payload)
+  assert response.status_code == 200
+  assert response.json['status'] == 'closed'
