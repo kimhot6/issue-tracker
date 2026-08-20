@@ -70,3 +70,8 @@ def test_patch_issue(reset_state):
   response = client.patch('/issues/0', json=payload)
   assert response.status_code == 200
   assert response.json['status'] == 'closed'
+  assert response.json['title'] == 'Fix login bug'
+  response = client.get('/issues/0')
+  assert response.json['status'] == 'closed'
+  response = client.patch('/issues/999')
+  assert response.status_code == 404
