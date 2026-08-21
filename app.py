@@ -8,9 +8,6 @@ DB_PATH = 'issues.db'
 def get_connection():
   return sqlite3.connect(DB_PATH)
 
-conn = get_connection()
-cursor = conn.cursor()
-
 def init_db(cursor):
   cursor.execute("""
   CREATE TABLE IF NOT EXISTS issues(
@@ -19,6 +16,10 @@ def init_db(cursor):
     status TEXT NOT NULL
   )
   """)
+
+conn = get_connection()
+cursor = conn.cursor()
+init_db(cursor)
 
 def row_to_issue(row):
   return {
@@ -73,4 +74,8 @@ def patch_issue(issue_id):
   return {'error': 'Not Found'}, 404
 
 if __name__ == "__main__":
-  app.run()
+  try:
+    app.run()
+  finally:
+    cursor.close()
+    conn.close()
