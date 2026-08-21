@@ -1,14 +1,15 @@
 import app as app_module
-import pytest
+import pytest, os
 
 client = app_module.app.test_client()
-conn = app_module.conn
-cursor = app_module.conn.cursor()
 
 @pytest.fixture
 def reset_state():
-  cursor.execute("DELETE FROM issues")
-  conn.commit()
+  app_module.DB_PATH = 'test.db'
+  conn = app_module.get_connection()
+  cursor = conn.cursor()
+  yield
+  os.remove('test.db')
   
 def test_issues(reset_state):
   response = client.get("/issues")
@@ -29,7 +30,7 @@ def test_post_issue_without_title(reset_state):
   response = client.post('/issues', json=payload)
   assert response.status_code == 400
   assert response.json['error'] == 'No Title'
-  row_count = cursor.execute("SELECT COUNT(*) FROM issues").fetchone()[0]
+  row_count = reset_state.cursor.execute("SELECT COUNT(*) FROM issues").fetchone()[0]
   assert row_count == 0
   
 def test_get_issue(reset_state):
@@ -55,8 +56,11 @@ def test_delete_issue(reset_state):
   response = client.get(f'/issues/{issue_id}')
   assert response.status_code == 404
   assert response.json['error'] == 'Not Found'
-  row_count = cursor.execute("SELECT COUNT(*) FROM issues").fetchone()[0]
+  row_count = reset_state.cursor.execute("SELECT COUNT(*) FROM issues").fetchone()[0]
   assert row_count == 0
+  response = client.delete(f'/issues/{issue_id+999}')
+  assert response.status_code == 404
+  assert response.json['error'] == 'Not Found'
   
 def test_patch_issue(reset_state):
   payload = {'title': 'Fix login bug'}

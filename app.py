@@ -3,7 +3,12 @@ import sqlite3
 
 app = Flask(__name__)
 
-conn = sqlite3.connect('issues.db')
+DB_PATH = 'issues.db'
+
+def get_connection():
+  return sqlite3.connect(DB_PATH)
+
+conn = get_connection()
 cursor = conn.cursor()
 
 cursor.execute("""
