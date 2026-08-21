@@ -11,13 +11,14 @@ def get_connection():
 conn = get_connection()
 cursor = conn.cursor()
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS issues(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  status TEXT NOT NULL
-)
-""")
+def init_db(cursor):
+  cursor.execute("""
+  CREATE TABLE IF NOT EXISTS issues(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    status TEXT NOT NULL
+  )
+  """)
 
 def row_to_issue(row):
   return {
